@@ -4,6 +4,14 @@ and crop each class and store it in torchvision dataset format. Specifically,
 it creates a train and test directory and creates a folder for each class and
 stores the crop class images randomly with a specified ratio in test and train
 paths.
+
+* ex/
+```
+python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2
+```
+> -y', '--yolo': path to yolo format directory
+> -t', '--torch': torchvision.dataset output directory
+> -r', '--ratio': ratio of test to train split
 """
 
 import re
@@ -23,8 +31,8 @@ def msg(name=None):
 
 parser = argparse.ArgumentParser(usage=msg())
 parser.add_argument('-y', '--yolo', help='path to yolo format directory', dest="ypath")
-parser.add_argument('-r', '--ratio', help='path to yolo format directory', dest="ratio", type=float)
-parser.add_argument('-t', '--torch', nargs='?', help='yolo format output directory', type=str,
+parser.add_argument('-r', '--ratio', help='ratio of test to train split', dest="ratio", type=float)
+parser.add_argument('-t', '--torch', nargs='?', help='torch dataset output directory', type=str,
                     const="./torch_dataset", default="./torch_dataset", dest="tpath")
 
 args = vars(parser.parse_args())
