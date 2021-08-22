@@ -11,5 +11,7 @@ stores the crop images for each class randomly in test or train paths with a spe
 python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2
 ```
 > -y', '--yolo': path to yolo format directory
+
 > -t', '--torch': torchvision.dataset output directory
+
 > -r', '--ratio': ratio of test to train split
