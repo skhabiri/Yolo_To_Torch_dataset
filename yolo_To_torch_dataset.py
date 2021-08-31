@@ -7,7 +7,7 @@ paths.
 
 * ex/
 ```
-python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2
+python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2 -wh 128 64
 ```
 > -y', '--yolo': path to yolo format directory
 > -t', '--torch': torchvision.dataset output directory
@@ -31,15 +31,19 @@ def msg(name=None):
 
 parser = argparse.ArgumentParser(usage=msg())
 parser.add_argument('-y', '--yolo', help='path to yolo format directory', dest="ypath")
-parser.add_argument('-r', '--ratio', help='ratio of test to train split', dest="ratio", type=float)
 parser.add_argument('-t', '--torch', nargs='?', help='torch dataset output directory', type=str,
                     const="./torch_dataset", default="./torch_dataset", dest="tpath")
+parser.add_argument('-r', '--ratio', help='ratio of test to train split', dest="ratio", type=float)
+parser.add_argument('-wh', '--size', nargs='+', help='desired cropped size, w, h', dest="size",
+                    default=[64, 128], type=int)
+
 
 args = vars(parser.parse_args())
 
 ypath = args["ypath"]
 tpath = args["tpath"]
 ratio = args["ratio"]
+dim = tuple(args["size"])
 
 img_path = ypath + '/images'
 label_path = ypath + '/labels'
@@ -88,6 +92,9 @@ for filename in glob.glob(label_path + '/*.txt'):
 
         crop_img = img[ymin:ymax, xmin:xmax]
 
+        # resize image
+        resized = cv2.resize(crop_img, dim, interpolation=cv2.INTER_AREA)
+
         if np.random.rand(1) < ratio:
             dir = '/test/'
         else:
@@ -95,7 +102,7 @@ for filename in glob.glob(label_path + '/*.txt'):
 
         img_out = tpath + dir + label_dict[cls] + '/' + label_dict[cls] + basename_no_ext + '.jpg'
 
-        cv2.imwrite(img_out, crop_img)
+        cv2.imwrite(img_out, resized)
         count += 1
-        if count % 10 == 0:
-            print(f'{count} files created)
+        if count % 500 == 0:
+            print(f'{count} files created')
