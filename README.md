@@ -11,7 +11,10 @@ paths.
 ```
 python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2 -wh 128 64
 ```
-> -y, '--yolo': path to yolo format directory
-> -t, '--torch': torchvision.dataset output directory
-> -r, '--ratio': ratio of test to train split
-> -wh, '--size': resize the image to a fixed width and height
+ > -y, '--yolo': path to yolo format directory
+ > 
+ > -t, '--torch': torchvision.dataset output directory
+ >
+ > -r, '--ratio': ratio of test to train split
+ >
+ > -wh, '--size': resize the image to a fixed width and height
