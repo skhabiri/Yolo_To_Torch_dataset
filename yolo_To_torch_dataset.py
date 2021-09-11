@@ -5,6 +5,14 @@ it creates a train and test directory and creates a folder for each class and
 stores the crop class images randomly with a specified ratio in test and train
 paths.
 
+input yolo file structure:
+./images: *.jpg
+./labels: *.txt > [class_number x_center y_center bbox_width bbox_height]
+
+output torchvision file structure:
+./train: class_name1/*.jpg, class_name2/*.jpg, ...
+./test: class_name1/*.jpg, class_name2/*.jpg, ...
+
 * ex/
 ```
 python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2 -wh 128 64
@@ -47,11 +55,15 @@ tpath = args["tpath"]
 ratio = args["ratio"]
 dim = tuple(args["size"])
 
+# image and label path containing yolo labeled images
 img_path = ypath + '/images'
 label_path = ypath + '/labels'
 
+# maps class number to human readable names
 label_dict = {"0": "bird", "1": "flatwing", "2": "quadcopter"}
 
+# create folders in destination torch folder for
+# each class label in train and test
 for k,v in label_dict.items():
     train_path = tpath + '/train/' + v
     test_path = tpath + '/test/' + v
@@ -63,7 +75,9 @@ for k,v in label_dict.items():
 
 def yolotxt(t):
     """
-    convert a yolo formatted line to normalized coordinates
+    convert a yolo formatted line of xywh to xyxy
+    input: yolo .txt has [label, x_center, y_center, bbox_width, bbox_height]
+    output: x_min, y_min, x_max, y_max
     """
     t0 = t.split()
     cls = t0[0]
@@ -84,6 +98,7 @@ for filename in glob.glob(label_path + '/*.txt'):
     for line in lines:
 
         img = cv2.imread(img_path + '/' + basename_no_ext + '.jpg')
+        # open cv shape attribute is (height,width,channel)
         dh, dw, _ = img.shape
 
         cls, xmin, ymin, xmax, ymax = yolotxt(line)
@@ -94,7 +109,8 @@ for filename in glob.glob(label_path + '/*.txt'):
 
         crop_img = img[ymin:ymax, xmin:xmax]
 
-        # resize image
+        # resize image to the requested size
+        # pytorch CNN requires a minimum size dimensions
         resized = cv2.resize(crop_img, dim, interpolation=cv2.INTER_AREA)
 
         if np.random.rand(1) < ratio:
