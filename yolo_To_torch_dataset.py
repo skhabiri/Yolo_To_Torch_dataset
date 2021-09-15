@@ -1,21 +1,22 @@
 """
 takes the yolo format labeled images stored in ./images and ./labels directory
-and crop each class and store it in torchvision dataset format. Specifically,
-it creates a train and test directory and creates a folder for each class and
-stores the crop class images randomly with a specified ratio in test and train
-paths.
+and crop each class and store it in standard torchvision dataset format.
+Specifically, it creates a train and test directory and creates a folder for
+each class and stores the crop class images randomly with a specified ratio in
+test and train paths.
 
 input yolo file structure:
 ./images: *.jpg
 ./labels: *.txt > [class_number x_center y_center bbox_width bbox_height]
 
 output torchvision file structure:
-./train: class_name1/*.jpg, class_name2/*.jpg, ...
-./test: class_name1/*.jpg, class_name2/*.jpg, ...
+./train: class_name1/*_cropped.jpg, class_name2/*_cropped.jpg, ...
+./test: class_name1/*_cropped.jpg, class_name2/*_cropped.jpg, ...
 
 * ex/
 ```
-python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2 -wh 128 64
+python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset
+                                -r 0.2 -wh 128 64
 ```
 > -y, '--yolo': path to yolo format directory
 > -t, '--torch': torchvision.dataset output directory
@@ -36,7 +37,8 @@ import numpy as np
 
 def msg(name=None):
     return """
-        python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset -r 0.2
+        python ./yolo_To_torch_dataset.py -y ./yolo_format -t ./torch_dataset
+                                        -r 0.2 -wh 128 64
         """
 
 parser = argparse.ArgumentParser(usage=msg())
@@ -48,6 +50,7 @@ parser.add_argument('-wh', '--size', nargs='+', help='desired cropped size, w, h
                     default=[64, 128], type=int)
 
 
+# vars(obj) return obj.__dict__()
 args = vars(parser.parse_args())
 
 ypath = args["ypath"]

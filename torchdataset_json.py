@@ -1,5 +1,23 @@
 """
-converts multi label yolo to pytorch dataset
+converts multi label yolo to a custom pytorch dataset
+A jason file named labels.json with custom keys such as image name and bounding
+box coordinates are created. Then a custom dataset class is defined that takes
+the created json file, an image directory and optionally transformer as input.
+
+The data is split into train and test. The custom dataset class can be loaded
+into pytorch DataLoader in batches.
+
+ex/ train_data, test_data = dataset_yolo(
+                    "./yolo_format", 0.2, train_transform, test_transform)
+
+train_dataloader = DataLoader(
+                train_data, transform=transform_train, batch_size=32,
+                shuffle=True, collate_fn=collate_fn)
+
+test_dataloader = DataLoader(
+                test_data, transform=transform_test, batch_size=32,
+                shuffle=True, collate_fn=collate_fn)
+
 """
 
 import os
